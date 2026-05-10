@@ -218,7 +218,7 @@ async def remove_channel(channel_id: str, guild_id: str) -> dict[str, Any]:
 async def move_channel_to_category(
     channel_id: str,
     guild_id: str,
-    parent_id: str | None = None,
+    parent_id: str,
     lock_permissions: bool = False,
 ) -> dict[str, Any]:
     return await move_channel(
