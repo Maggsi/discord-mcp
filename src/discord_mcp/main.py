@@ -1,5 +1,7 @@
 from typing import Any
 
+from pydantic import Field
+
 import uvicorn
 
 from discord_mcp.config import settings
@@ -160,7 +162,7 @@ async def edit_text_channel(
     nsfw: bool | None = None,
     rate_limit_per_user: int | None = None,
     position: int | None = None,
-    parent_id: str | None = None,
+    parent_id: str | None = Field(default=None, description="Category ID to move this channel into. Get IDs via list_channels (filter type='category'). Null = remove from category."),
     default_auto_archive_duration: int | None = None,
 ) -> dict[str, Any]:
     return await edit_channel(
@@ -182,7 +184,7 @@ async def edit_voice_channel(
     bitrate: int | None = None,
     user_limit: int | None = None,
     position: int | None = None,
-    parent_id: str | None = None,
+    parent_id: str | None = Field(default=None, description="Category ID to move this channel into. Get IDs via list_channels (filter type='category'). Null = remove from category."),
     rtc_region: str | None = None,
 ) -> dict[str, Any]:
     return await edit_channel(
@@ -268,7 +270,7 @@ async def create_new_role(
     color: int = 0,
     hoist: bool = False,
     mentionable: bool = False,
-    permissions: str | None = None,
+    permissions: str | None = Field(default=None, description="Role perm flags (comma-sep). Ex: 'manage_roles','ban_members'. Null = default."),
 ) -> dict[str, Any]:
     resolved_name = role_name or name or "new-role"
     if color < 0 or color > 16777215:
@@ -292,7 +294,7 @@ async def modify_role(
     position: int | None = None,
     hoist: bool | None = None,
     mentionable: bool | None = None,
-    permissions: str | None = None,
+    permissions: str | None = Field(default=None, description="Role perm flags (comma-sep). Ex: 'manage_roles','ban_members'. Null = default."),
 ) -> dict[str, Any]:
     return await edit_role(
         role_id=role_id,
@@ -344,8 +346,8 @@ async def configure_channel_permissions(
     channel_id: str,
     target_id: str,
     target_type: str,
-    allow: str | None = None,
-    deny: str | None = None,
+    allow: str | None = Field(default=None, description="Perm flags to grant (comma-sep). Ex: 'view_channel','send_messages','manage_channels'. See PERMISSION_FLAGS for valid names."),
+    deny: str | None = Field(default=None, description="Perm flags to deny/remove (comma-sep). Same format as above. Ex: 'embed_links','attach_files','mention_everyone'."),
 ) -> dict[str, Any]:
     return await set_channel_permissions(
         channel_id=channel_id,
@@ -361,8 +363,8 @@ async def configure_category_permissions(
     category_id: str,
     target_id: str,
     target_type: str,
-    allow: str | None = None,
-    deny: str | None = None,
+    allow: str | None = Field(default=None, description="Perm flags to grant (comma-sep). Ex: 'view_channel','send_messages','manage_channels'. See PERMISSION_FLAGS for valid names."),
+    deny: str | None = Field(default=None, description="Perm flags to deny/remove (comma-sep). Same format as above. Ex: 'embed_links','attach_files','mention_everyone'."),
 ) -> dict[str, Any]:
     return await set_category_permissions(
         category_id=category_id,
@@ -377,7 +379,7 @@ async def configure_category_permissions(
 async def update_role_permissions(
     role_id: str,
     guild_id: str,
-    permissions: str,
+    permissions: str = Field(description="Role perm flags to set (comma-sep). Ex: 'manage_roles','administrator','ban_members'. See PERMISSION_FLAGS for valid names."),
 ) -> dict[str, Any]:
     return await set_role_permissions(
         role_id=role_id,
