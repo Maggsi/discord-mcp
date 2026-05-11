@@ -3,6 +3,7 @@ from typing import Any, Optional
 import discord
 
 from discord_mcp.mcp.context import get_current_session, update_bot_status
+from discord_mcp.utils.discord_constants import parse_permission_names_to_ints
 from discord_mcp.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -66,7 +67,7 @@ async def create_role(
             details={"guild_id": guild_id},
         )
 
-    perms = discord.Permissions(int(permissions)) if permissions else discord.Permissions()
+    perms = discord.Permissions(parse_permission_names_to_ints(permissions)) if permissions else discord.Permissions()
 
     kwargs: dict[str, Any] = {
         "name": name,
@@ -141,7 +142,7 @@ async def edit_role(
     if name is not None:
         kwargs["name"] = name
     if permissions is not None:
-        kwargs["permissions"] = discord.Permissions(int(permissions))
+        kwargs["permissions"] = discord.Permissions(parse_permission_names_to_ints(permissions))
     if color is not None:
         kwargs["color"] = discord.Color(color)
     if position is not None:

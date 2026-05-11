@@ -3,6 +3,7 @@ from typing import Any, Optional
 import discord
 
 from discord_mcp.mcp.context import get_current_session, update_bot_status
+from discord_mcp.utils.discord_constants import parse_permission_names_to_ints
 from discord_mcp.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -85,8 +86,8 @@ async def set_channel_permissions(
             details={"target_id": target_id, "target_type": target_type},
         )
 
-    allow_perms = discord.Permissions(int(allow)) if allow else discord.Permissions()
-    deny_perms = discord.Permissions(int(deny)) if deny else discord.Permissions()
+    allow_perms = discord.Permissions(parse_permission_names_to_ints(allow)) if allow else discord.Permissions()
+    deny_perms = discord.Permissions(parse_permission_names_to_ints(deny)) if deny else discord.Permissions()
 
     overwrite = discord.PermissionOverwrite.from_pair(allow_perms, deny_perms)
 
@@ -157,8 +158,8 @@ async def set_category_permissions(
             details={"target_id": target_id, "target_type": target_type},
         )
 
-    allow_perms = discord.Permissions(int(allow)) if allow else discord.Permissions()
-    deny_perms = discord.Permissions(int(deny)) if deny else discord.Permissions()
+    allow_perms = discord.Permissions(parse_permission_names_to_ints(allow)) if allow else discord.Permissions()
+    deny_perms = discord.Permissions(parse_permission_names_to_ints(deny)) if deny else discord.Permissions()
 
     overwrite = discord.PermissionOverwrite.from_pair(allow_perms, deny_perms)
 
@@ -224,7 +225,7 @@ async def set_role_permissions(
             details={"role_id": role_id},
         )
 
-    await role.edit(permissions=discord.Permissions(int(permissions)))
+    await role.edit(permissions=discord.Permissions(parse_permission_names_to_ints(permissions)))
 
     await _with_status(f"Setting role permissions")
     logger.info("role_permissions_set", role_id=role_id, guild_id=guild_id)

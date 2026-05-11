@@ -11,6 +11,7 @@ from discord_mcp.models.channel import (
     ChannelMove,
     ChannelResponse,
 )
+from discord_mcp.utils.discord_constants import parse_permission_names_to_ints
 from discord_mcp.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -98,8 +99,10 @@ async def create_channel(
         for overwrite in permission_overwrites:
             target_id = overwrite.get("id")
             target_type = overwrite.get("type", "role")
-            allow = discord.Permissions(int(overwrite.get("allow", 0)))
-            deny = discord.Permissions(int(overwrite.get("deny", 0)))
+            allow_val = overwrite.get("allow", "0")
+            deny_val = overwrite.get("deny", "0")
+            allow = discord.Permissions(parse_permission_names_to_ints(allow_val)) if allow_val != "0" else discord.Permissions()
+            deny = discord.Permissions(parse_permission_names_to_ints(deny_val)) if deny_val != "0" else discord.Permissions()
 
             if target_type == "role":
                 target = guild.get_role(int(target_id)) if target_id else None
@@ -259,8 +262,10 @@ async def edit_channel(
         for overwrite in permission_overwrites:
             target_id = overwrite.get("id")
             target_type = overwrite.get("type", "role")
-            allow = discord.Permissions(int(overwrite.get("allow", 0)))
-            deny = discord.Permissions(int(overwrite.get("deny", 0)))
+            allow_val = overwrite.get("allow", "0")
+            deny_val = overwrite.get("deny", "0")
+            allow = discord.Permissions(parse_permission_names_to_ints(allow_val)) if allow_val != "0" else discord.Permissions()
+            deny = discord.Permissions(parse_permission_names_to_ints(deny_val)) if deny_val != "0" else discord.Permissions()
 
             if target_type == "role":
                 target = guild.get_role(int(target_id)) if target_id else None

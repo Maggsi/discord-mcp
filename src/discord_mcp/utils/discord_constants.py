@@ -69,3 +69,15 @@ def get_permission_names() -> list[str]:
         List of permission flag name strings, sorted alphabetically.
     """
     return sorted(PERMISSION_FLAGS.keys())
+
+
+def parse_permission_names_to_ints(perm_string: str) -> int:
+    """Convert a comma-separated string of permission names to an integer bitmask."""
+    value = 0
+    for name in perm_string.split(","):
+        name = name.strip()
+        if name in PERMISSION_FLAGS:
+            value |= PERMISSION_FLAGS[name]
+        else:
+            raise ValueError(f"Unknown permission flag: {name}")
+    return value
