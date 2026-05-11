@@ -1,4 +1,5 @@
 import contextvars
+from typing import Any
 
 from fastmcp import FastMCP
 from fastmcp.contrib.bulk_tool_caller import BulkToolCaller
@@ -10,6 +11,19 @@ from discord_mcp.discord.session import session_manager
 from discord_mcp.utils.logging import get_logger
 
 logger = get_logger(__name__)
+
+
+class NormalizeNullMiddleware(Middleware):
+    """Convert string 'null' to Python None for known nullable permission keys."""
+
+    _NULL_KEYS = frozenset({"allow", "deny", "permissions"})
+
+    async def on_call_tool(self, context: MiddlewareContext, call_next) -> Any:
+        args = context.message.arguments or {}
+        normalized = {k: (None if v == "null" else v) for k, v in args.items()}
+        context.message.arguments = normalized
+        return await call_next(context)
+
 
 mcp = FastMCP("Discord MCP Server")
 
@@ -115,6 +129,7 @@ class AuthMiddleware(Middleware):
             return await call_next(context)
 
 
+mcp.add_middleware(NormalizeNullMiddleware())
 mcp.add_middleware(AuthMiddleware())
 
 bulk_tool_caller = BulkToolCaller()
